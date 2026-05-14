@@ -1,5 +1,12 @@
 import { Dialog } from '@angular/cdk/dialog';
-import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -10,9 +17,9 @@ import { RouterLink } from '@angular/router';
 
 import { AddPersonDialogComponent } from '../../components/add-person-dialog/add-person-dialog.component';
 import type { NewPersonFields, SwapiPerson } from '../../models/swapi-person.model';
-import { LocalPeopleStore } from '../../services/local-people.store';
-import { SwapiPeopleService } from '../../services/swapi-people.service';
-import { extractPersonRouteId, isLocalPersonId } from '../../utils/swapi-person.util';
+import { LocalPeopleStore } from '../../services/local-people/local-people.service';
+import { SwapiPeopleService } from '../../services/swap-people/swapi-people.service';
+import { extractPersonRouteId, isLocalPersonId } from '../../utils/swapi-person/swapi-person.util';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,

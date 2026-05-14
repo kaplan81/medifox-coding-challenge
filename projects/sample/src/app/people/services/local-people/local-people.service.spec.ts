@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 
-import { SWAPI_PEOPLE_API_URL, NewPersonFields, SwapiPerson } from '../models/swapi-person.model';
-import { LocalPeopleStore } from './local-people.store';
+import { NewPersonFields, SWAPI_PEOPLE_API_URL, SwapiPerson } from '../models/swapi-person.model';
+import { LocalPeopleStore } from './local-people.service';
 
 describe('LocalPeopleStore', () => {
   let store: LocalPeopleStore;

@@ -1,7 +1,11 @@
 import { Injectable, signal } from '@angular/core';
 
-import { SWAPI_PEOPLE_API_URL, NewPersonFields, SwapiPerson } from '../models/swapi-person.model';
-import { extractPersonRouteId } from '../utils/swapi-person.util';
+import {
+  NewPersonFields,
+  SWAPI_PEOPLE_API_URL,
+  SwapiPerson,
+} from '../../models/swapi-person.model';
+import { extractPersonRouteId } from '../../utils/swapi-person/swapi-person.util';
 
 @Injectable({
   providedIn: 'root',
@@ -23,9 +27,8 @@ export class LocalPeopleStore {
 
   getByRouteId(routeId: string): SwapiPerson | null {
     return (
-      this.#localPeople().find(
-        (person: SwapiPerson) => extractPersonRouteId(person) === routeId,
-      ) ?? null
+      this.#localPeople().find((person: SwapiPerson) => extractPersonRouteId(person) === routeId) ??
+      null
     );
   }
 

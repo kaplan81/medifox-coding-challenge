@@ -6,7 +6,7 @@ import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { of } from 'rxjs';
 
 import { SWAPI_PEOPLE_API_URL, SwapiPerson } from '../../models/swapi-person.model';
-import { LocalPeopleStore } from '../../services/local-people.store';
+import { LocalPeopleStore } from '../../services/local-people';
 import { PeopleDetailComponent } from './people-detail.component';
 
 const luke: SwapiPerson = {

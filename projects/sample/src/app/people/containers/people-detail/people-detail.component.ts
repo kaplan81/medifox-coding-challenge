@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -10,9 +17,9 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { catchError, map, merge, of, switchMap } from 'rxjs';
 
 import type { SwapiPerson } from '../../models/swapi-person.model';
-import { LocalPeopleStore } from '../../services/local-people.store';
-import { SwapiPeopleService } from '../../services/swapi-people.service';
-import { isLocalPersonId } from '../../utils/swapi-person.util';
+import { LocalPeopleStore } from '../../services/local-people/local-people.service';
+import { SwapiPeopleService } from '../../services/swap-people/swapi-people.service';
+import { isLocalPersonId } from '../../utils/swapi-person/swapi-person.util';
 
 type PeopleDetailState =
   | { status: 'error' }
