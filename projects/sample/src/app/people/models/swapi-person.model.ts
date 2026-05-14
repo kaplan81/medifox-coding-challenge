@@ -17,4 +17,11 @@ export interface SwapiPerson {
   vehicles?: string[];
 }
 
-export type NewPersonFields = Pick<SwapiPerson, 'birth_year' | 'gender' | 'height' | 'mass' | 'name'>;
+export type NewPersonFields = Pick<
+  SwapiPerson,
+  'birth_year' | 'gender' | 'height' | 'mass' | 'name'
+>;
+
+export interface SwapiPeoplePage {
+  results: SwapiPerson[];
+}

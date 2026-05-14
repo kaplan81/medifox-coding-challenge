@@ -1,8 +1,4 @@
-import type { SwapiPerson } from '../../models/swapi-person.model';
-
-interface SwapiPeoplePage {
-  results: SwapiPerson[];
-}
+import type { SwapiPeoplePage, SwapiPerson } from '../../models/swapi-person.model';
 
 export function extractPersonRouteId(person: SwapiPerson): string {
   const trimmed: string = person.url.replace(/\/$/, '');
