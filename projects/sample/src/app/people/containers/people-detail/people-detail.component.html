@@ -1,0 +1,30 @@
+<div class="people-detail">
+  <a class="people-detail__back" routerLink="..">Back to list</a>
+
+  @let detailState = state();
+  @switch (detailState.status) {
+    @case ('loading') {
+      <p class="people-detail__status">Loading…</p>
+    }
+    @case ('error') {
+      <p class="people-detail__status" role="alert">Could not load this person.</p>
+    }
+    @case ('not-found') {
+      <p class="people-detail__status" role="alert">Person not found.</p>
+    }
+    @case ('ready') {
+      <dl class="people-detail__fields">
+        <dt class="people-detail__term">Name</dt>
+        <dd class="people-detail__value">{{ detailState.person.name }}</dd>
+        <dt class="people-detail__term">Height</dt>
+        <dd class="people-detail__value">{{ detailState.person.height }}</dd>
+        <dt class="people-detail__term">Mass</dt>
+        <dd class="people-detail__value">{{ detailState.person.mass }}</dd>
+        <dt class="people-detail__term">Birth year</dt>
+        <dd class="people-detail__value">{{ detailState.person.birth_year }}</dd>
+        <dt class="people-detail__term">Gender</dt>
+        <dd class="people-detail__value">{{ detailState.person.gender }}</dd>
+      </dl>
+    }
+  }
+</div>

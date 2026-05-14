@@ -6,12 +6,16 @@ export const routes: Routes = [
     loadChildren: () => import('../dashboard/dashboard.routes').then((feature) => feature.routes),
   },
   {
+    path: 'people',
+    loadChildren: () => import('../people/people.routes').then((feature) => feature.routes),
+  },
+  {
     path: '',
     pathMatch: 'full',
-    redirectTo: 'dashboard',
+    redirectTo: 'people',
   },
   {
     path: '**',
-    redirectTo: 'dashboard',
+    redirectTo: 'people',
   },
 ];

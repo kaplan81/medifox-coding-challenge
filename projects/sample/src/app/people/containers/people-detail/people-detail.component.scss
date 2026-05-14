@@ -1,0 +1,25 @@
+.people-detail {
+  padding: 1rem;
+}
+
+.people-detail__back {
+  display: inline-block;
+  margin-bottom: 1rem;
+}
+
+.people-detail__fields {
+  margin: 0;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.25rem 1rem;
+  max-width: 28rem;
+}
+
+.people-detail__term {
+  font-weight: 600;
+  margin: 0;
+}
+
+.people-detail__value {
+  margin: 0;
+}

@@ -1,0 +1,15 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`PeopleDetailComponent > should match snapshot 1`] = `
+{
+  "person": {
+    "birth_year": "19BBY",
+    "gender": "male",
+    "height": "172",
+    "mass": "77",
+    "name": "Luke Skywalker",
+    "url": "https://swapi.info/api/people/1",
+  },
+  "status": "ready",
+}
+`;

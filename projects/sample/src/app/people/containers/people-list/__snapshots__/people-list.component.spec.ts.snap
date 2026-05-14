@@ -1,0 +1,10 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`PeopleListComponent > should match snapshot 1`] = `
+{
+  "loadState": "ready",
+  "names": [
+    "Luke Skywalker",
+  ],
+}
+`;
