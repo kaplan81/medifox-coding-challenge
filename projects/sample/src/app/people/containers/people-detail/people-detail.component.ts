@@ -17,7 +17,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { catchError, map, merge, of, switchMap } from 'rxjs';
 
 import type { SwapiPerson } from '../../models/swapi-person.model';
-import { LocalPeopleStore } from '../../services/local-people/local-people.service';
+import { LocalPeopleStateService } from '../../services/local-people-state/local-people-state.service';
 import { SwapiPeopleService } from '../../services/swap-people/swapi-people.service';
 import { isLocalPersonId } from '../../utils/swapi-person/swapi-person.util';
 
@@ -45,7 +45,7 @@ type PeopleDetailState =
 export class PeopleDetailComponent {
   #destroyRef = inject(DestroyRef);
   #route = inject(ActivatedRoute);
-  #store = inject(LocalPeopleStore);
+  #store = inject(LocalPeopleStateService);
   #swapi = inject(SwapiPeopleService);
   initial = computed(() => {
     const current = this.state();

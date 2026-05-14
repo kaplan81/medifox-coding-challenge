@@ -17,7 +17,7 @@ import { RouterLink } from '@angular/router';
 
 import { AddPersonDialogComponent } from '../../components/add-person-dialog/add-person-dialog.component';
 import type { NewPersonFields, SwapiPerson } from '../../models/swapi-person.model';
-import { LocalPeopleStore } from '../../services/local-people/local-people.service';
+import { LocalPeopleStateService } from '../../services/local-people-state/local-people-state.service';
 import { SwapiPeopleService } from '../../services/swap-people/swapi-people.service';
 import { extractPersonRouteId, isLocalPersonId } from '../../utils/swapi-person/swapi-person.util';
 
@@ -39,7 +39,7 @@ import { extractPersonRouteId, isLocalPersonId } from '../../utils/swapi-person/
 export class PeopleListComponent {
   #destroyRef = inject(DestroyRef);
   #dialog = inject(Dialog);
-  #store = inject(LocalPeopleStore);
+  #store = inject(LocalPeopleStateService);
   #swapi = inject(SwapiPeopleService);
   loadState = signal<'error' | 'loading' | 'ready'>('loading');
   localCount = computed(() => this.#store.localPeople().length);

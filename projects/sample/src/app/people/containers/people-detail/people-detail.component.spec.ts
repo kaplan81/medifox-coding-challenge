@@ -6,7 +6,7 @@ import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { of } from 'rxjs';
 
 import { SwapiPerson } from '../../models/swapi-person.model';
-import { LocalPeopleStore } from '../../services/local-people/local-people.service';
+import { LocalPeopleStateService } from '../../services/local-people-state/local-people-state.service';
 import { SwapiPeopleService } from '../../services/swap-people/swapi-people.service';
 import { PeopleDetailComponent } from './people-detail.component';
 
@@ -76,7 +76,7 @@ describe('PeopleDetailComponent', () => {
         ],
       }).compileComponents();
 
-      const store = TestBed.inject(LocalPeopleStore);
+      const store = TestBed.inject(LocalPeopleStateService);
       store.add({
         birth_year: '10BBY',
         gender: 'n/a',
