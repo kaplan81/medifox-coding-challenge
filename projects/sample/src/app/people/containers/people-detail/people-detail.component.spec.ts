@@ -5,8 +5,9 @@ import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { of } from 'rxjs';
 
-import { SWAPI_PEOPLE_API_URL, SwapiPerson } from '../../models/swapi-person.model';
-import { LocalPeopleStore } from '../../services/local-people';
+import { SwapiPerson } from '../../models/swapi-person.model';
+import { LocalPeopleStore } from '../../services/local-people/local-people.service';
+import { SwapiPeopleService } from '../../services/swap-people/swapi-people.service';
 import { PeopleDetailComponent } from './people-detail.component';
 
 const luke: SwapiPerson = {
@@ -15,7 +16,7 @@ const luke: SwapiPerson = {
   height: '172',
   mass: '77',
   name: 'Luke Skywalker',
-  url: `${SWAPI_PEOPLE_API_URL}/1`,
+  url: `${SwapiPeopleService.apiUrl}/1`,
 };
 
 describe('PeopleDetailComponent', () => {
@@ -50,7 +51,7 @@ describe('PeopleDetailComponent', () => {
 
   it('should match snapshot', () => {
     fixture.detectChanges();
-    httpMock.expectOne(`${SWAPI_PEOPLE_API_URL}/1`).flush(luke);
+    httpMock.expectOne(`${SwapiPeopleService.apiUrl}/1`).flush(luke);
     fixture.detectChanges();
     expect(component.state()).toMatchSnapshot();
   });

@@ -3,25 +3,23 @@ import { Injectable, inject } from '@angular/core';
 
 import { Observable, map } from 'rxjs';
 
-import {
-  SWAPI_PEOPLE_API_URL,
-  SwapiPerson,
-  normalizeSwapiPeopleListPayload,
-} from '../../models/swapi-person.model';
+import { SwapiPerson, normalizeSwapiPeopleListPayload } from '../../models/swapi-person.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class SwapiPeopleService {
+  static readonly apiUrl = 'https://swapi.info/api/people';
+
   #http = inject(HttpClient);
 
   getAll(): Observable<SwapiPerson[]> {
     return this.#http
-      .get<unknown>(SWAPI_PEOPLE_API_URL)
+      .get<unknown>(SwapiPeopleService.apiUrl)
       .pipe(map((raw: unknown) => normalizeSwapiPeopleListPayload(raw)));
   }
 
   getById(id: string): Observable<SwapiPerson> {
-    return this.#http.get<SwapiPerson>(`${SWAPI_PEOPLE_API_URL}/${id}`);
+    return this.#http.get<SwapiPerson>(`${SwapiPeopleService.apiUrl}/${id}`);
   }
 }

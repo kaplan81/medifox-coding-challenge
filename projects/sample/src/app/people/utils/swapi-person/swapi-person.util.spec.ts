@@ -1,5 +1,6 @@
-import type { SwapiPerson } from '../models/swapi-person.model';
-import { SWAPI_PEOPLE_API_URL } from '../models/swapi-person.model';
+import type { SwapiPerson } from '../../models/swapi-person.model';
+
+import { SwapiPeopleService } from '../../services/swap-people/swapi-people.service';
 import { extractPersonRouteId, isLocalPersonId } from './swapi-person.util';
 
 const person: SwapiPerson = {
@@ -8,7 +9,7 @@ const person: SwapiPerson = {
   height: '172',
   mass: '77',
   name: 'Luke Skywalker',
-  url: `${SWAPI_PEOPLE_API_URL}/1`,
+  url: `${SwapiPeopleService.apiUrl}/1`,
 };
 
 describe('extractPersonRouteId()', () => {
@@ -20,7 +21,7 @@ describe('extractPersonRouteId()', () => {
     expect(
       extractPersonRouteId({
         ...person,
-        url: `${SWAPI_PEOPLE_API_URL}/12/`,
+        url: `${SwapiPeopleService.apiUrl}/12/`,
       }),
     ).toEqual('12');
   });

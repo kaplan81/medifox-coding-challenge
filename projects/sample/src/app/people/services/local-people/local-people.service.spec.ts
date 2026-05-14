@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 
-import { NewPersonFields, SWAPI_PEOPLE_API_URL, SwapiPerson } from '../models/swapi-person.model';
+import { NewPersonFields, SwapiPerson } from '../../models/swapi-person.model';
+import { SwapiPeopleService } from '../swap-people/swapi-people.service';
 import { LocalPeopleStore } from './local-people.service';
 
 describe('LocalPeopleStore', () => {
@@ -34,7 +35,7 @@ describe('LocalPeopleStore', () => {
       expect(local).toHaveLength(1);
       expect(local[0].name).toEqual('Test Person');
       expect(local[0].url).toEqual(
-        `${SWAPI_PEOPLE_API_URL}/local-00000000-0000-0000-0000-000000000001`,
+        `${SwapiPeopleService.apiUrl}/local-00000000-0000-0000-0000-000000000001`,
       );
     });
   });
@@ -74,7 +75,7 @@ describe('LocalPeopleStore', () => {
           height: '172',
           mass: '77',
           name: 'Aaron',
-          url: `${SWAPI_PEOPLE_API_URL}/1`,
+          url: `${SwapiPeopleService.apiUrl}/1`,
         },
       ];
 

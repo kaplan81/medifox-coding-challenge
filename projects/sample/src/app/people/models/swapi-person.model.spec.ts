@@ -1,8 +1,5 @@
-import {
-  SWAPI_PEOPLE_API_URL,
-  SwapiPerson,
-  normalizeSwapiPeopleListPayload,
-} from './swapi-person.model';
+import { SwapiPeopleService } from '../services/swap-people/swapi-people.service';
+import { SwapiPerson, normalizeSwapiPeopleListPayload } from './swapi-person.model';
 
 const minimalPerson: SwapiPerson = {
   birth_year: '19BBY',
@@ -10,7 +7,7 @@ const minimalPerson: SwapiPerson = {
   height: '172',
   mass: '77',
   name: 'Luke Skywalker',
-  url: `${SWAPI_PEOPLE_API_URL}/1`,
+  url: `${SwapiPeopleService.apiUrl}/1`,
 };
 
 describe('normalizeSwapiPeopleListPayload()', () => {

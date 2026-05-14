@@ -1,5 +1,3 @@
-export const SWAPI_PEOPLE_API_URL = 'https://swapi.info/api/people' as const;
-
 export interface SwapiPerson {
   birth_year: string;
   gender: string;

@@ -3,7 +3,7 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { TestBed } from '@angular/core/testing';
 import { firstValueFrom } from 'rxjs';
 
-import { SWAPI_PEOPLE_API_URL, SwapiPerson } from '../models/swapi-person.model';
+import { SwapiPerson } from '../../models/swapi-person.model';
 import { SwapiPeopleService } from './swapi-people.service';
 
 const luke: SwapiPerson = {
@@ -12,7 +12,7 @@ const luke: SwapiPerson = {
   height: '172',
   mass: '77',
   name: 'Luke Skywalker',
-  url: `${SWAPI_PEOPLE_API_URL}/1`,
+  url: `${SwapiPeopleService.apiUrl}/1`,
 };
 
 describe('SwapiPeopleService', () => {
@@ -38,7 +38,7 @@ describe('SwapiPeopleService', () => {
   describe('getAll()', () => {
     it('should GET the people collection', async () => {
       const peoplePromise = firstValueFrom(service.getAll());
-      httpMock.expectOne(SWAPI_PEOPLE_API_URL).flush([luke]);
+      httpMock.expectOne(SwapiPeopleService.apiUrl).flush([luke]);
       const people: SwapiPerson[] = await peoplePromise;
       expect(people).toEqual([luke]);
     });
@@ -47,7 +47,7 @@ describe('SwapiPeopleService', () => {
   describe('getById()', () => {
     it('should GET a single person', async () => {
       const personPromise = firstValueFrom(service.getById('1'));
-      httpMock.expectOne(`${SWAPI_PEOPLE_API_URL}/1`).flush(luke);
+      httpMock.expectOne(`${SwapiPeopleService.apiUrl}/1`).flush(luke);
       const person: SwapiPerson = await personPromise;
       expect(person).toEqual(luke);
     });

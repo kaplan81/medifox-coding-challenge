@@ -1,10 +1,7 @@
 import { Injectable, signal } from '@angular/core';
 
-import {
-  NewPersonFields,
-  SWAPI_PEOPLE_API_URL,
-  SwapiPerson,
-} from '../../models/swapi-person.model';
+import { NewPersonFields, SwapiPerson } from '../../models/swapi-person.model';
+import { SwapiPeopleService } from '../swap-people/swapi-people.service';
 import { extractPersonRouteId } from '../../utils/swapi-person/swapi-person.util';
 
 @Injectable({
@@ -19,7 +16,7 @@ export class LocalPeopleStore {
     const id: string = `local-${crypto.randomUUID()}`;
     const person: SwapiPerson = {
       ...fields,
-      url: `${SWAPI_PEOPLE_API_URL}/${id}`,
+      url: `${SwapiPeopleService.apiUrl}/${id}`,
     };
     this.#localPeople.update((list: SwapiPerson[]) => [...list, person]);
     return id;

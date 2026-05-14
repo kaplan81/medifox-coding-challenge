@@ -7,7 +7,8 @@ import { provideRouter } from '@angular/router';
 
 import { of } from 'rxjs';
 
-import { NewPersonFields, SWAPI_PEOPLE_API_URL, SwapiPerson } from '../../models/swapi-person.model';
+import { NewPersonFields, SwapiPerson } from '../../models/swapi-person.model';
+import { SwapiPeopleService } from '../../services/swap-people/swapi-people.service';
 import { PeopleListComponent } from './people-list.component';
 
 const luke: SwapiPerson = {
@@ -16,7 +17,7 @@ const luke: SwapiPerson = {
   height: '172',
   mass: '77',
   name: 'Luke Skywalker',
-  url: `${SWAPI_PEOPLE_API_URL}/1`,
+  url: `${SwapiPeopleService.apiUrl}/1`,
 };
 
 const leiaFields: NewPersonFields = {
@@ -59,7 +60,7 @@ describe('PeopleListComponent', () => {
 
   it('should match snapshot', () => {
     fixture.detectChanges();
-    httpMock.expectOne(SWAPI_PEOPLE_API_URL).flush([luke]);
+    httpMock.expectOne(SwapiPeopleService.apiUrl).flush([luke]);
     fixture.detectChanges();
     expect({
       loadState: component.loadState(),
@@ -72,7 +73,7 @@ describe('PeopleListComponent', () => {
     it('should add a returned person to the local store', () => {
       vi.spyOn(crypto, 'randomUUID').mockReturnValue('00000000-0000-0000-0000-000000000004');
       fixture.detectChanges();
-      httpMock.expectOne(SWAPI_PEOPLE_API_URL).flush([luke]);
+      httpMock.expectOne(SwapiPeopleService.apiUrl).flush([luke]);
       fixture.detectChanges();
 
       const dialogRefStub = { closed: of(leiaFields) } as unknown as DialogRef<NewPersonFields>;
@@ -90,7 +91,7 @@ describe('PeopleListComponent', () => {
 
     it('should not add anything when the dialog is cancelled', () => {
       fixture.detectChanges();
-      httpMock.expectOne(SWAPI_PEOPLE_API_URL).flush([luke]);
+      httpMock.expectOne(SwapiPeopleService.apiUrl).flush([luke]);
       fixture.detectChanges();
 
       const dialogRefStub = { closed: of(undefined) } as unknown as DialogRef<NewPersonFields>;
