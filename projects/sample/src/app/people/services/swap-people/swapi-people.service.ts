@@ -3,7 +3,8 @@ import { Injectable, inject } from '@angular/core';
 
 import { Observable, map } from 'rxjs';
 
-import { SwapiPerson, normalizeSwapiPeopleListPayload } from '../../models/swapi-person.model';
+import { SwapiPerson } from '../../models/swapi-person.model';
+import { normalizeSwapiPeopleListPayload } from '../../utils/swapi-person/swapi-person.util';
 
 @Injectable({
   providedIn: 'root',
