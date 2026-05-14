@@ -64,9 +64,21 @@ describe('PeopleListComponent', () => {
     fixture.detectChanges();
     expect({
       loadState: component.loadState(),
-      names: component.mergedPeople().map((p: SwapiPerson) => p.name),
+      names: component.filteredPeople().map((p: SwapiPerson) => p.name),
     }).toMatchSnapshot();
     expect(nativeEl.textContent).toContain('Luke Skywalker');
+  });
+
+  describe('deletePerson()', () => {
+    it('should remove a person from the visible list', () => {
+      fixture.detectChanges();
+      httpMock.expectOne(SwapiPeopleService.apiUrl).flush([luke]);
+      fixture.detectChanges();
+
+      component.deletePerson('1');
+
+      expect(component.filteredPeople()).toEqual([]);
+    });
   });
 
   describe('openAddDialog()', () => {
@@ -83,7 +95,7 @@ describe('PeopleListComponent', () => {
 
       expect(dialogOpenSpy).toHaveBeenCalled();
       const names = component
-        .mergedPeople()
+        .filteredPeople()
         .map((p: SwapiPerson) => p.name)
         .filter((n: string) => n === 'Leia');
       expect(names).toEqual(['Leia']);
@@ -97,10 +109,33 @@ describe('PeopleListComponent', () => {
       const dialogRefStub = { closed: of(undefined) } as unknown as DialogRef<NewPersonFields>;
       dialogOpenSpy.mockReturnValue(dialogRefStub);
 
-      const sizeBefore = component.mergedPeople().length;
+      const sizeBefore = component.filteredPeople().length;
       component.openAddDialog();
 
-      expect(component.mergedPeople()).toHaveLength(sizeBefore);
+      expect(component.filteredPeople()).toHaveLength(sizeBefore);
+    });
+  });
+
+  describe('onSearch()', () => {
+    it('should filter visible people by name', () => {
+      fixture.detectChanges();
+      httpMock.expectOne(SwapiPeopleService.apiUrl).flush([
+        luke,
+        {
+          ...luke,
+          name: 'Leia Organa',
+          url: `${SwapiPeopleService.apiUrl}/5`,
+        },
+      ]);
+      fixture.detectChanges();
+
+      const input = document.createElement('input');
+      input.value = 'leia';
+      component.onSearch({ target: input } as unknown as Event);
+
+      expect(component.filteredPeople().map((person: SwapiPerson) => person.name)).toEqual([
+        'Leia Organa',
+      ]);
     });
   });
 });

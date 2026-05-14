@@ -7,7 +7,11 @@
     <span class="people-list__spacer"></span>
     @if (loadState() === 'ready') {
       <span class="people-list__count" aria-live="polite">
-        {{ mergedPeople().length }} characters
+        @if (searchTerm()) {
+          {{ filteredCount() }} of {{ totalCount() }} characters
+        } @else {
+          {{ totalCount() }} characters
+        }
         @if (localCount() > 0) {
           <span class="people-list__count-local">({{ localCount() }} local)</span>
         }
@@ -30,16 +34,45 @@
         </div>
       }
       @case ('ready') {
+        <mat-form-field appearance="outline" class="people-list__search">
+          <mat-label>Search by name</mat-label>
+          <mat-icon matPrefix>search</mat-icon>
+          <input
+            matInput
+            type="search"
+            [value]="searchTerm()"
+            (input)="onSearch($event)"
+          />
+          @if (searchTerm()) {
+            <button
+              mat-icon-button
+              matSuffix
+              type="button"
+              aria-label="Clear search"
+              (click)="clearSearch()"
+            >
+              <mat-icon>close</mat-icon>
+            </button>
+          }
+        </mat-form-field>
+
+        @if (filteredPeople().length === 0) {
+          <div class="people-list__status" role="status">
+            <mat-icon class="people-list__status-icon">person_search</mat-icon>
+            <p class="people-list__status-text">No characters match your search.</p>
+          </div>
+        }
+
         <ul class="people-list__grid">
-          @for (person of mergedPeople(); track routeIdFor(person)) {
+          @for (person of filteredPeople(); track routeIdFor(person)) {
             <li class="people-list__item">
-              <a
-                class="people-list__card-link"
-                [routerLink]="['/people', routeIdFor(person)]"
-                [attr.aria-label]="'View details for ' + person.name"
-              >
-                <mat-card appearance="filled" class="people-list__card">
-                  <mat-card-content class="people-list__card-content">
+              <mat-card appearance="filled" class="people-list__card">
+                <mat-card-content class="people-list__card-content">
+                  <a
+                    class="people-list__card-link"
+                    [routerLink]="['/people', routeIdFor(person)]"
+                    [attr.aria-label]="'View details for ' + person.name"
+                  >
                     <span class="people-list__avatar" aria-hidden="true">
                       {{ initialFor(person.name) }}
                     </span>
@@ -54,9 +87,18 @@
                       </span>
                     </span>
                     <mat-icon class="people-list__chevron" aria-hidden="true">chevron_right</mat-icon>
-                  </mat-card-content>
-                </mat-card>
-              </a>
+                  </a>
+                  <button
+                    mat-icon-button
+                    type="button"
+                    class="people-list__delete"
+                    [attr.aria-label]="'Delete ' + person.name"
+                    (click)="deletePerson(routeIdFor(person))"
+                  >
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </mat-card-content>
+              </mat-card>
             </li>
           }
         </ul>

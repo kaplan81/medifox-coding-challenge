@@ -59,11 +59,11 @@ describe('LocalPeopleStateService', () => {
     });
   });
 
-  describe('mergedWithRemote()', () => {
-    it('should merge and sort by name', () => {
+  describe('remove()', () => {
+    it('should remove a stored person by route id', () => {
       vi.spyOn(crypto, 'randomUUID').mockReturnValue('00000000-0000-4000-8000-000000000003');
 
-      service.add({
+      const routeId: string = service.add({
         birth_year: '0BBY',
         gender: 'n/a',
         height: '100',
@@ -71,19 +71,10 @@ describe('LocalPeopleStateService', () => {
         name: 'Zebra',
       });
 
-      const remote: SwapiPerson[] = [
-        {
-          birth_year: '19BBY',
-          gender: 'male',
-          height: '172',
-          mass: '77',
-          name: 'Aaron',
-          url: `${SwapiPeopleService.apiUrl}/1`,
-        },
-      ];
+      service.remove(routeId);
 
-      const names = service.mergedWithRemote(remote).map((p: SwapiPerson) => p.name);
-      expect(names).toEqual(['Aaron', 'Zebra']);
+      expect(service.localPeople()).toEqual([]);
+      expect(service.getByRouteId(routeId)).toBeNull();
     });
   });
 });

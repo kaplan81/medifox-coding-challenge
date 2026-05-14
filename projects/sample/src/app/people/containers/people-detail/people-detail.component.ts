@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   DestroyRef,
+  Signal,
   computed,
   inject,
   signal,
@@ -14,11 +15,10 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 
-import { catchError, map, merge, of, switchMap } from 'rxjs';
+import { map } from 'rxjs';
 
 import type { SwapiPerson } from '../../models/swapi-person.model';
-import { LocalPeopleStateService } from '../../services/local-people-state/local-people-state.service';
-import { SwapiPeopleService } from '../../services/swap-people/swapi-people.service';
+import { PeopleStateService } from '../../services/people-state/people-state.service';
 import { isLocalPersonId } from '../../utils/swapi-person/swapi-person.util';
 
 type PeopleDetailState =
@@ -44,9 +44,8 @@ type PeopleDetailState =
 })
 export class PeopleDetailComponent {
   #destroyRef = inject(DestroyRef);
+  #peopleStateService = inject(PeopleStateService);
   #route = inject(ActivatedRoute);
-  #store = inject(LocalPeopleStateService);
-  #swapi = inject(SwapiPeopleService);
   initial = computed(() => {
     const current = this.state();
     if (current.status !== 'ready') {
@@ -63,34 +62,36 @@ export class PeopleDetailComponent {
     const id: string = url.split('/').filter(Boolean).pop() ?? '';
     return isLocalPersonId(id);
   });
-  state = signal<PeopleDetailState>({ status: 'loading' });
+  routeId = signal<string>('');
+  state: Signal<PeopleDetailState> = computed<PeopleDetailState>(() => {
+    const id: string = this.routeId();
+    if (id === '') {
+      return { status: 'not-found' };
+    }
+    const person: SwapiPerson | null = this.#peopleStateService.getByRouteId(id);
+    if (person !== null) {
+      return { person, status: 'ready' };
+    }
+    if (!isLocalPersonId(id) && this.#peopleStateService.loadState() === 'loading') {
+      return { status: 'loading' };
+    }
+    if (!isLocalPersonId(id) && this.#peopleStateService.loadState() === 'error') {
+      return { status: 'error' };
+    }
+    return { status: 'not-found' };
+  });
 
   constructor() {
     this.#route.paramMap
       .pipe(
         map((params) => params.get('id') ?? ''),
-        switchMap((id: string) => {
-          if (!id) {
-            return of<PeopleDetailState>({ status: 'not-found' });
-          }
-          if (isLocalPersonId(id)) {
-            const person = this.#store.getByRouteId(id);
-            return of<PeopleDetailState>(
-              person ? { person, status: 'ready' } : { status: 'not-found' },
-            );
-          }
-          return merge(
-            of<PeopleDetailState>({ status: 'loading' }),
-            this.#swapi.getById(id).pipe(
-              map((person: SwapiPerson): PeopleDetailState => ({ person, status: 'ready' })),
-              catchError(() => of<PeopleDetailState>({ status: 'error' })),
-            ),
-          );
-        }),
         takeUntilDestroyed(this.#destroyRef),
       )
-      .subscribe((nextState: PeopleDetailState) => {
-        this.state.set(nextState);
+      .subscribe((id: string) => {
+        this.routeId.set(id);
+        if (id !== '' && !isLocalPersonId(id)) {
+          this.#peopleStateService.loadAll();
+        }
       });
   }
 }

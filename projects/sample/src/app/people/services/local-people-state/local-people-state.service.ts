@@ -40,9 +40,17 @@ export class LocalPeopleStateService extends StateMixin(emptyBase, initialLocalP
     return this.state().entities?.[routeId] ?? null;
   }
 
-  mergedWithRemote(remote: SwapiPerson[]): SwapiPerson[] {
-    return [...remote, ...this.localPeople()].sort((a: SwapiPerson, b: SwapiPerson) =>
-      a.name.localeCompare(b.name),
-    );
+  remove(routeId: string): void {
+    const entities: Entities<SwapiPerson> | null = this.state().entities;
+    if (entities === null || entities[routeId] === undefined) {
+      return;
+    }
+    const nextEntities: Entities<SwapiPerson> = { ...entities };
+    delete nextEntities[routeId];
+    const ids: (string | number)[] = this.state().ids.filter((id: string | number) => id !== routeId);
+    this.updateState({
+      entities: ids.length > 0 ? nextEntities : null,
+      ids,
+    });
   }
 }

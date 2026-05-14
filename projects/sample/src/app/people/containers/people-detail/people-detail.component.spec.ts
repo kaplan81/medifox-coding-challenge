@@ -51,7 +51,7 @@ describe('PeopleDetailComponent', () => {
 
   it('should match snapshot', () => {
     fixture.detectChanges();
-    httpMock.expectOne(`${SwapiPeopleService.apiUrl}/1`).flush(luke);
+    httpMock.expectOne(SwapiPeopleService.apiUrl).flush([luke]);
     fixture.detectChanges();
     expect(component.state()).toMatchSnapshot();
   });

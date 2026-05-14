@@ -3,22 +3,22 @@ import {
   ChangeDetectionStrategy,
   Component,
   DestroyRef,
-  computed,
   inject,
-  signal,
+  Signal,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { RouterLink } from '@angular/router';
 
 import { AddPersonDialogComponent } from '../../components/add-person-dialog/add-person-dialog.component';
 import type { NewPersonFields, SwapiPerson } from '../../models/swapi-person.model';
-import { LocalPeopleStateService } from '../../services/local-people-state/local-people-state.service';
-import { SwapiPeopleService } from '../../services/swap-people/swapi-people.service';
+import { PeopleLoadState, PeopleStateService } from '../../services/people-state/people-state.service';
 import { extractPersonRouteId, isLocalPersonId } from '../../utils/swapi-person/swapi-person.util';
 
 @Component({
@@ -26,7 +26,9 @@ import { extractPersonRouteId, isLocalPersonId } from '../../utils/swapi-person/
   imports: [
     MatButtonModule,
     MatCardModule,
+    MatFormFieldModule,
     MatIconModule,
+    MatInputModule,
     MatProgressSpinnerModule,
     MatToolbarModule,
     RouterLink,
@@ -39,32 +41,37 @@ import { extractPersonRouteId, isLocalPersonId } from '../../utils/swapi-person/
 export class PeopleListComponent {
   #destroyRef = inject(DestroyRef);
   #dialog = inject(Dialog);
-  #store = inject(LocalPeopleStateService);
-  #swapi = inject(SwapiPeopleService);
-  loadState = signal<'error' | 'loading' | 'ready'>('loading');
-  localCount = computed(() => this.#store.localPeople().length);
-  mergedPeople = computed(() => this.#store.mergedWithRemote(this.remotePeople()));
+  #peopleStateService = inject(PeopleStateService);
+  filteredCount: Signal<number> = this.#peopleStateService.filteredCount;
+  filteredPeople: Signal<SwapiPerson[]> = this.#peopleStateService.filteredPeople;
   readonly isLocal = isLocalPersonId;
+  loadState: Signal<PeopleLoadState> = this.#peopleStateService.loadState;
+  localCount: Signal<number> = this.#peopleStateService.localCount;
   readonly routeIdFor = extractPersonRouteId;
-  remotePeople = signal<SwapiPerson[]>([]);
+  searchTerm: Signal<string> = this.#peopleStateService.searchTerm;
+  totalCount: Signal<number> = this.#peopleStateService.totalCount;
 
   constructor() {
-    this.#swapi
-      .getAll()
-      .pipe(takeUntilDestroyed(this.#destroyRef))
-      .subscribe({
-        error: () => {
-          this.loadState.set('error');
-        },
-        next: (list: SwapiPerson[]) => {
-          this.remotePeople.set(list);
-          this.loadState.set('ready');
-        },
-      });
+    this.#peopleStateService.loadAll();
+  }
+
+  clearSearch(): void {
+    this.#peopleStateService.setSearchTerm('');
+  }
+
+  deletePerson(routeId: string): void {
+    this.#peopleStateService.remove(routeId);
   }
 
   initialFor(name: string): string {
     return name.trim().charAt(0).toUpperCase() || '?';
+  }
+
+  onSearch(event: Event): void {
+    const target: EventTarget | null = event.target;
+    if (target instanceof HTMLInputElement) {
+      this.#peopleStateService.setSearchTerm(target.value);
+    }
   }
 
   openAddDialog(): void {
@@ -80,7 +87,7 @@ export class PeopleListComponent {
     );
     ref.closed.pipe(takeUntilDestroyed(this.#destroyRef)).subscribe((result) => {
       if (result !== undefined) {
-        this.#store.add(result);
+        this.#peopleStateService.add(result);
       }
     });
   }
