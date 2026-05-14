@@ -1,9 +1,9 @@
-import { Injectable, Signal } from '@angular/core';
+import { Injectable, Signal, computed } from '@angular/core';
 
 import { emptyBase } from '../../../app/mixins/empty';
 import { StateMixin } from '../../../app/mixins/state/state.mixin';
+import { Entities } from '../../../app/models/state.model';
 import { NewPersonFields, SwapiPerson } from '../../models/swapi-person.model';
-import { extractPersonRouteId } from '../../utils/swapi-person/swapi-person.util';
 import { SwapiPeopleService } from '../swap-people/swapi-people.service';
 import { initialLocalPeopleState } from './local-people-state.initial';
 
@@ -11,23 +11,33 @@ import { initialLocalPeopleState } from './local-people-state.initial';
   providedIn: 'root',
 })
 export class LocalPeopleStateService extends StateMixin(emptyBase, initialLocalPeopleState) {
-  readonly localPeople: Signal<SwapiPerson[]> = this.getStateProp('localPeople');
+  readonly localPeople: Signal<SwapiPerson[]> = computed<SwapiPerson[]>(() => {
+    const entities: Entities<SwapiPerson> | null = this.state().entities;
+    if (entities === null) {
+      return [];
+    }
+    return this.state().ids.map((id: string | number) => entities[id]);
+  });
 
   add(fields: NewPersonFields): string {
     const id: string = `local-${crypto.randomUUID()}`;
+    const entities: Entities<SwapiPerson> = this.state().entities ?? {};
     const person: SwapiPerson = {
       ...fields,
       url: `${SwapiPeopleService.apiUrl}/${id}`,
     };
-    this.updateStateProp('localPeople', [...this.localPeople(), person]);
+    this.updateState({
+      entities: {
+        ...entities,
+        [id]: person,
+      },
+      ids: [...this.state().ids, id],
+    });
     return id;
   }
 
   getByRouteId(routeId: string): SwapiPerson | null {
-    return (
-      this.localPeople().find((person: SwapiPerson) => extractPersonRouteId(person) === routeId) ??
-      null
-    );
+    return this.state().entities?.[routeId] ?? null;
   }
 
   mergedWithRemote(remote: SwapiPerson[]): SwapiPerson[] {

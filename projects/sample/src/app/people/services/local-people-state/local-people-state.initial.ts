@@ -1,9 +1,6 @@
-import { SwapiPerson } from '../../models/swapi-person.model';
-
-export interface LocalPeopleState {
-  localPeople: SwapiPerson[];
-}
+import { LocalPeopleState } from '../../models/local-people-state.model';
 
 export const initialLocalPeopleState: LocalPeopleState = {
-  localPeople: [],
+  entities: null,
+  ids: [],
 };
