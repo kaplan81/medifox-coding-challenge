@@ -2,6 +2,10 @@
 
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.2.
 
+## App Preview
+
+![Star Wars characters list preview](img/Screenshot%202026-05-14%20at%2012.14.23.png)
+
 ## Development server
 
 To start a local development server, run:
