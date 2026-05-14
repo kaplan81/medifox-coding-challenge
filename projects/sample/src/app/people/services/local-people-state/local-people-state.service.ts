@@ -5,14 +5,7 @@ import { StateMixin } from '../../../app/mixins/state/state.mixin';
 import { NewPersonFields, SwapiPerson } from '../../models/swapi-person.model';
 import { extractPersonRouteId } from '../../utils/swapi-person/swapi-person.util';
 import { SwapiPeopleService } from '../swap-people/swapi-people.service';
-
-interface LocalPeopleState {
-  localPeople: SwapiPerson[];
-}
-
-const initialLocalPeopleState: LocalPeopleState = {
-  localPeople: [],
-};
+import { initialLocalPeopleState } from './local-people-state.initial';
 
 @Injectable({
   providedIn: 'root',
