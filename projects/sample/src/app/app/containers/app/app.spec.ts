@@ -23,8 +23,8 @@ describe('App', () => {
     expect(component).toMatchSnapshot();
   });
 
-  it('should render title', async () => {
+  it('should render a router outlet', async () => {
     await fixture.whenStable();
-    expect(nativeEl.querySelector('h1')?.textContent).toContain('Hello, sample');
+    expect(nativeEl.querySelector('router-outlet')).not.toBeNull();
   });
 });

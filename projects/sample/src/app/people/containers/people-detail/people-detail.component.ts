@@ -1,5 +1,10 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatToolbarModule } from '@angular/material/toolbar';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 
 import { catchError, map, merge, of, switchMap } from 'rxjs';
@@ -17,7 +22,14 @@ type PeopleDetailState =
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink],
+  imports: [
+    MatButtonModule,
+    MatCardModule,
+    MatIconModule,
+    MatProgressSpinnerModule,
+    MatToolbarModule,
+    RouterLink,
+  ],
   selector: 'smp-people-detail',
   standalone: true,
   styleUrls: ['./people-detail.component.scss'],
@@ -28,6 +40,22 @@ export class PeopleDetailComponent {
   #route = inject(ActivatedRoute);
   #store = inject(LocalPeopleStore);
   #swapi = inject(SwapiPeopleService);
+  initial = computed(() => {
+    const current = this.state();
+    if (current.status !== 'ready') {
+      return '?';
+    }
+    return current.person.name.trim().charAt(0).toUpperCase() || '?';
+  });
+  isLocal = computed(() => {
+    const current = this.state();
+    if (current.status !== 'ready') {
+      return false;
+    }
+    const url: string = current.person.url;
+    const id: string = url.split('/').filter(Boolean).pop() ?? '';
+    return isLocalPersonId(id);
+  });
   state = signal<PeopleDetailState>({ status: 'loading' });
 
   constructor() {

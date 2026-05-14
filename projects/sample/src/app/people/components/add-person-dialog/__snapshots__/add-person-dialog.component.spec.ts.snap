@@ -1,0 +1,14 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`AddPersonDialogComponent > should match snapshot 1`] = `
+{
+  "controls": [
+    "name",
+    "height",
+    "mass",
+    "birth_year",
+    "gender",
+  ],
+  "invalid": true,
+}
+`;

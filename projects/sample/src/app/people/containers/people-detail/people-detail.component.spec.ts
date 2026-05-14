@@ -1,6 +1,7 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { of } from 'rxjs';
 
@@ -28,6 +29,7 @@ describe('PeopleDetailComponent', () => {
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
+        provideNoopAnimations(),
         {
           provide: ActivatedRoute,
           useValue: {
@@ -63,6 +65,7 @@ describe('PeopleDetailComponent', () => {
         providers: [
           provideHttpClient(),
           provideHttpClientTesting(),
+          provideNoopAnimations(),
           {
             provide: ActivatedRoute,
             useValue: {

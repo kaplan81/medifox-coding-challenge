@@ -1,30 +1,71 @@
 <div class="people-detail">
-  <a class="people-detail__back" routerLink="..">Back to list</a>
+  <mat-toolbar class="people-detail__toolbar" color="primary">
+    <a
+      mat-icon-button
+      routerLink="/people"
+      class="people-detail__back"
+      aria-label="Back to the character list"
+    >
+      <mat-icon>arrow_back</mat-icon>
+    </a>
+    <span class="people-detail__toolbar-title">Character profile</span>
+  </mat-toolbar>
 
-  @let detailState = state();
-  @switch (detailState.status) {
-    @case ('loading') {
-      <p class="people-detail__status">Loading…</p>
+  <main class="people-detail__content">
+    @let current = state();
+    @switch (current.status) {
+      @case ('loading') {
+        <div class="people-detail__status" role="status">
+          <mat-spinner diameter="48"></mat-spinner>
+          <p class="people-detail__status-text">Loading hyperspace records…</p>
+        </div>
+      }
+      @case ('error') {
+        <div class="people-detail__status" role="alert">
+          <mat-icon class="people-detail__status-icon">error_outline</mat-icon>
+          <p class="people-detail__status-text">Could not load this character.</p>
+        </div>
+      }
+      @case ('not-found') {
+        <div class="people-detail__status" role="alert">
+          <mat-icon class="people-detail__status-icon">person_off</mat-icon>
+          <p class="people-detail__status-text">Character not found.</p>
+        </div>
+      }
+      @case ('ready') {
+        <mat-card appearance="filled" class="people-detail__card">
+          <mat-card-content class="people-detail__card-content">
+            <header class="people-detail__hero">
+              <span class="people-detail__avatar" aria-hidden="true">{{ initial() }}</span>
+              <div class="people-detail__hero-text">
+                <h1 class="people-detail__name">{{ current.person.name }}</h1>
+                @if (isLocal()) {
+                  <span class="people-detail__badge">local entry</span>
+                }
+              </div>
+            </header>
+
+            <dl class="people-detail__fields">
+              <div class="people-detail__field">
+                <dt class="people-detail__term">Height</dt>
+                <dd class="people-detail__value">{{ current.person.height }}</dd>
+              </div>
+              <div class="people-detail__field">
+                <dt class="people-detail__term">Mass</dt>
+                <dd class="people-detail__value">{{ current.person.mass }}</dd>
+              </div>
+              <div class="people-detail__field">
+                <dt class="people-detail__term">Birth year</dt>
+                <dd class="people-detail__value">{{ current.person.birth_year }}</dd>
+              </div>
+              <div class="people-detail__field">
+                <dt class="people-detail__term">Gender</dt>
+                <dd class="people-detail__value">{{ current.person.gender }}</dd>
+              </div>
+            </dl>
+          </mat-card-content>
+        </mat-card>
+      }
     }
-    @case ('error') {
-      <p class="people-detail__status" role="alert">Could not load this person.</p>
-    }
-    @case ('not-found') {
-      <p class="people-detail__status" role="alert">Person not found.</p>
-    }
-    @case ('ready') {
-      <dl class="people-detail__fields">
-        <dt class="people-detail__term">Name</dt>
-        <dd class="people-detail__value">{{ detailState.person.name }}</dd>
-        <dt class="people-detail__term">Height</dt>
-        <dd class="people-detail__value">{{ detailState.person.height }}</dd>
-        <dt class="people-detail__term">Mass</dt>
-        <dd class="people-detail__value">{{ detailState.person.mass }}</dd>
-        <dt class="people-detail__term">Birth year</dt>
-        <dd class="people-detail__value">{{ detailState.person.birth_year }}</dd>
-        <dt class="people-detail__term">Gender</dt>
-        <dd class="people-detail__value">{{ detailState.person.gender }}</dd>
-      </dl>
-    }
-  }
+  </main>
 </div>

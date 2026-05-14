@@ -1,50 +1,77 @@
 <div class="people-list">
-  <h1 class="people-list__title">Star Wars people</h1>
-  @switch (loadState()) {
-    @case ('loading') {
-      <p class="people-list__status">Loading…</p>
-    }
-    @case ('error') {
-      <p class="people-list__status" role="alert">Could not load people from the API.</p>
-    }
-    @case ('ready') {
-      <ul class="people-list__items">
-        @for (person of mergedPeople(); track routeIdFor(person)) {
-          <li class="people-list__item">
-            <a class="people-list__link" [routerLink]="['/people', routeIdFor(person)]">{{
-              person.name
-            }}</a>
-          </li>
+  <mat-toolbar class="people-list__toolbar" color="primary">
+    <span class="people-list__brand">
+      <mat-icon class="people-list__brand-icon" aria-hidden="true">auto_awesome</mat-icon>
+      <span class="people-list__brand-title">Star Wars Characters</span>
+    </span>
+    <span class="people-list__spacer"></span>
+    @if (loadState() === 'ready') {
+      <span class="people-list__count" aria-live="polite">
+        {{ mergedPeople().length }} characters
+        @if (localCount() > 0) {
+          <span class="people-list__count-local">({{ localCount() }} local)</span>
         }
-      </ul>
+      </span>
     }
-  }
+  </mat-toolbar>
 
-  <section class="people-list__add" aria-labelledby="people-list-add-heading">
-    <h2 class="people-list__add-title" id="people-list-add-heading">Add person (local only)</h2>
-    <p class="people-list__add-hint">New entries are stored in memory and are not sent to the API.</p>
-    <form class="people-list__form" [formGroup]="addForm" (ngSubmit)="onAddSubmit()">
-      <label class="people-list__field">
-        <span class="people-list__label">Name</span>
-        <input class="people-list__input" formControlName="name" type="text" autocomplete="name" />
-      </label>
-      <label class="people-list__field">
-        <span class="people-list__label">Height</span>
-        <input class="people-list__input" formControlName="height" type="text" />
-      </label>
-      <label class="people-list__field">
-        <span class="people-list__label">Mass</span>
-        <input class="people-list__input" formControlName="mass" type="text" />
-      </label>
-      <label class="people-list__field">
-        <span class="people-list__label">Birth year</span>
-        <input class="people-list__input" formControlName="birth_year" type="text" />
-      </label>
-      <label class="people-list__field">
-        <span class="people-list__label">Gender</span>
-        <input class="people-list__input" formControlName="gender" type="text" />
-      </label>
-      <button class="people-list__submit" type="submit">Add to list</button>
-    </form>
-  </section>
+  <main class="people-list__content">
+    @switch (loadState()) {
+      @case ('loading') {
+        <div class="people-list__status" role="status">
+          <mat-spinner diameter="48"></mat-spinner>
+          <p class="people-list__status-text">Summoning the galaxy…</p>
+        </div>
+      }
+      @case ('error') {
+        <div class="people-list__status" role="alert">
+          <mat-icon class="people-list__status-icon">error_outline</mat-icon>
+          <p class="people-list__status-text">Could not load people from SWAPI.</p>
+        </div>
+      }
+      @case ('ready') {
+        <ul class="people-list__grid">
+          @for (person of mergedPeople(); track routeIdFor(person)) {
+            <li class="people-list__item">
+              <a
+                class="people-list__card-link"
+                [routerLink]="['/people', routeIdFor(person)]"
+                [attr.aria-label]="'View details for ' + person.name"
+              >
+                <mat-card appearance="filled" class="people-list__card">
+                  <mat-card-content class="people-list__card-content">
+                    <span class="people-list__avatar" aria-hidden="true">
+                      {{ initialFor(person.name) }}
+                    </span>
+                    <span class="people-list__card-text">
+                      <span class="people-list__name">{{ person.name }}</span>
+                      <span class="people-list__meta">
+                        <span class="people-list__chip">{{ person.gender }}</span>
+                        <span class="people-list__chip">{{ person.birth_year }}</span>
+                        @if (isLocal(routeIdFor(person))) {
+                          <span class="people-list__chip people-list__chip--local">local</span>
+                        }
+                      </span>
+                    </span>
+                    <mat-icon class="people-list__chevron" aria-hidden="true">chevron_right</mat-icon>
+                  </mat-card-content>
+                </mat-card>
+              </a>
+            </li>
+          }
+        </ul>
+      }
+    }
+  </main>
+
+  <button
+    mat-fab
+    color="primary"
+    class="people-list__fab"
+    type="button"
+    aria-label="Add a new character"
+    (click)="openAddDialog()"
+  >
+    <mat-icon>add</mat-icon>
+  </button>
 </div>

@@ -1,9 +1,13 @@
+import { Dialog, DialogRef } from '@angular/cdk/dialog';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';
 
-import { SWAPI_PEOPLE_API_URL, SwapiPerson } from '../../models/swapi-person.model';
+import { of } from 'rxjs';
+
+import { NewPersonFields, SWAPI_PEOPLE_API_URL, SwapiPerson } from '../../models/swapi-person.model';
 import { PeopleListComponent } from './people-list.component';
 
 const luke: SwapiPerson = {
@@ -15,16 +19,32 @@ const luke: SwapiPerson = {
   url: `${SWAPI_PEOPLE_API_URL}/1`,
 };
 
+const leiaFields: NewPersonFields = {
+  birth_year: '19BBY',
+  gender: 'female',
+  height: '150',
+  mass: '49',
+  name: 'Leia',
+};
+
 describe('PeopleListComponent', () => {
   let component: PeopleListComponent;
+  let dialogOpenSpy: ReturnType<typeof vi.fn>;
   let fixture: ComponentFixture<PeopleListComponent>;
   let httpMock: HttpTestingController;
   let nativeEl: HTMLElement;
 
   beforeEach(async () => {
+    dialogOpenSpy = vi.fn();
     await TestBed.configureTestingModule({
       imports: [PeopleListComponent],
-      providers: [provideHttpClient(), provideHttpClientTesting(), provideRouter([])],
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        provideNoopAnimations(),
+        provideRouter([]),
+        { provide: Dialog, useValue: { open: dialogOpenSpy } },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(PeopleListComponent);
@@ -48,27 +68,38 @@ describe('PeopleListComponent', () => {
     expect(nativeEl.textContent).toContain('Luke Skywalker');
   });
 
-  describe('onAddSubmit()', () => {
-    it('should add a valid person to the local store', () => {
+  describe('openAddDialog()', () => {
+    it('should add a returned person to the local store', () => {
       vi.spyOn(crypto, 'randomUUID').mockReturnValue('00000000-0000-0000-0000-000000000004');
       fixture.detectChanges();
       httpMock.expectOne(SWAPI_PEOPLE_API_URL).flush([luke]);
       fixture.detectChanges();
 
-      component.addForm.setValue({
-        birth_year: '1ABY',
-        gender: 'female',
-        height: '180',
-        mass: '70',
-        name: 'Leia',
-      });
-      component.onAddSubmit();
+      const dialogRefStub = { closed: of(leiaFields) } as unknown as DialogRef<NewPersonFields>;
+      dialogOpenSpy.mockReturnValue(dialogRefStub);
 
+      component.openAddDialog();
+
+      expect(dialogOpenSpy).toHaveBeenCalled();
       const names = component
         .mergedPeople()
         .map((p: SwapiPerson) => p.name)
         .filter((n: string) => n === 'Leia');
       expect(names).toEqual(['Leia']);
+    });
+
+    it('should not add anything when the dialog is cancelled', () => {
+      fixture.detectChanges();
+      httpMock.expectOne(SWAPI_PEOPLE_API_URL).flush([luke]);
+      fixture.detectChanges();
+
+      const dialogRefStub = { closed: of(undefined) } as unknown as DialogRef<NewPersonFields>;
+      dialogOpenSpy.mockReturnValue(dialogRefStub);
+
+      const sizeBefore = component.mergedPeople().length;
+      component.openAddDialog();
+
+      expect(component.mergedPeople()).toHaveLength(sizeBefore);
     });
   });
 });

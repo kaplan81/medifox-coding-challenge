@@ -1,0 +1,57 @@
+.add-person-dialog {
+  display: block;
+  width: min(36rem, 92vw);
+  padding: 1.25rem 1.5rem 1.5rem;
+  background: var(--mat-sys-surface-container-high);
+  color: var(--mat-sys-on-surface);
+  border-radius: 1rem;
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.45);
+}
+
+.add-person-dialog__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.add-person-dialog__title {
+  margin: 0;
+  font-size: 1.375rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+.add-person-dialog__hint {
+  margin: 0.25rem 0 1rem;
+  font-size: 0.875rem;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.add-person-dialog__form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.25rem 1rem;
+}
+
+.add-person-dialog__field {
+  width: 100%;
+}
+
+.add-person-dialog__field--wide {
+  grid-column: 1 / -1;
+}
+
+.add-person-dialog__actions {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+@media (max-width: 480px) {
+  .add-person-dialog__form {
+    grid-template-columns: 1fr;
+  }
+}

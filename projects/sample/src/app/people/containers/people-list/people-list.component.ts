@@ -1,16 +1,29 @@
+import { Dialog } from '@angular/cdk/dialog';
 import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatToolbarModule } from '@angular/material/toolbar';
 import { RouterLink } from '@angular/router';
 
-import type { SwapiPerson } from '../../models/swapi-person.model';
+import { AddPersonDialogComponent } from '../../components/add-person-dialog/add-person-dialog.component';
+import type { NewPersonFields, SwapiPerson } from '../../models/swapi-person.model';
 import { LocalPeopleStore } from '../../services/local-people.store';
 import { SwapiPeopleService } from '../../services/swapi-people.service';
-import { extractPersonRouteId } from '../../utils/swapi-person.util';
+import { extractPersonRouteId, isLocalPersonId } from '../../utils/swapi-person.util';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [
+    MatButtonModule,
+    MatCardModule,
+    MatIconModule,
+    MatProgressSpinnerModule,
+    MatToolbarModule,
+    RouterLink,
+  ],
   selector: 'smp-people-list',
   standalone: true,
   styleUrls: ['./people-list.component.scss'],
@@ -18,21 +31,13 @@ import { extractPersonRouteId } from '../../utils/swapi-person.util';
 })
 export class PeopleListComponent {
   #destroyRef = inject(DestroyRef);
-  #fb = inject(FormBuilder);
+  #dialog = inject(Dialog);
   #store = inject(LocalPeopleStore);
   #swapi = inject(SwapiPeopleService);
-  addForm = this.#fb.nonNullable.group({
-    birth_year: ['', Validators.required],
-    gender: ['', Validators.required],
-    height: ['', Validators.required],
-    mass: ['', Validators.required],
-    name: ['', Validators.required],
-  });
   loadState = signal<'error' | 'loading' | 'ready'>('loading');
-  mergedPeople = computed(() => {
-    this.#store.localPeople();
-    return this.#store.mergedWithRemote(this.remotePeople());
-  });
+  localCount = computed(() => this.#store.localPeople().length);
+  mergedPeople = computed(() => this.#store.mergedWithRemote(this.remotePeople()));
+  readonly isLocal = isLocalPersonId;
   readonly routeIdFor = extractPersonRouteId;
   remotePeople = signal<SwapiPerson[]>([]);
 
@@ -51,12 +56,25 @@ export class PeopleListComponent {
       });
   }
 
-  onAddSubmit(): void {
-    if (this.addForm.invalid) {
-      this.addForm.markAllAsTouched();
-      return;
-    }
-    this.#store.add(this.addForm.getRawValue());
-    this.addForm.reset();
+  initialFor(name: string): string {
+    return name.trim().charAt(0).toUpperCase() || '?';
+  }
+
+  openAddDialog(): void {
+    const ref = this.#dialog.open<NewPersonFields, void, AddPersonDialogComponent>(
+      AddPersonDialogComponent,
+      {
+        ariaLabel: 'Add a new character',
+        disableClose: false,
+        hasBackdrop: true,
+        backdropClass: 'cdk-overlay-dark-backdrop',
+        panelClass: 'add-person-dialog-panel',
+      },
+    );
+    ref.closed.pipe(takeUntilDestroyed(this.#destroyRef)).subscribe((result) => {
+      if (result !== undefined) {
+        this.#store.add(result);
+      }
+    });
   }
 }
